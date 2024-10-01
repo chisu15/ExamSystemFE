@@ -1,0 +1,36 @@
+.list-exam-shift {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.box-exam {
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+}
+
+.box-exam h2 {
+    margin: 0;
+    padding-bottom: 10px;
+    color: #333;
+}
+
+.box-exam p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.box-exam a {
+    display: inline-block;
+    margin-top: 10px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.box-exam a:hover {
+    text-decoration: underline;
+}
