@@ -11,26 +11,25 @@ const ScanInvigilator = ({ invigilator }) => {
 	const [submitStatus, setSubmitStatus] = useState("");
 	const navigate = useNavigate();
 
-	// Xử lý QR code quét thành công
 	const onScanSuccess = (decodedText) => {
+		const obj = JSON.parse(decodedText);
+		console.log(obj);
 		console.log(`Scanned code: ${decodedText}`);
-		setInvigilatorCode(decodedText); // Cập nhật mã giám thị sau khi quét
+		setInvigilatorCode(obj.teacher_code);
 	};
 
-	// Xử lý lỗi khi quét QR code
 	const onScanFailure = (error) => {
 		console.warn(`QR Code scan error: ${error}`);
 	};
 
-	// Xử lý gửi dữ liệu sau khi quét hoặc nhập thủ công
 	const handleSubmit = async () => {
 		const code = invigilatorCode || manualInput;
 
 		try {
-			const obj = JSON.parse(code); // Giả sử dữ liệu QR code là JSON
+			const obj = JSON.parse(code);
 			console.log(obj);
 
-			const shiftId = 1; // Thay thế bằng shift_id thực tế của bạn
+			const shiftId = 1;
 
 			const data = {
 				shift_id: shiftId,
@@ -60,8 +59,8 @@ const ScanInvigilator = ({ invigilator }) => {
 	// Khởi tạo `Html5QrcodeScanner`
 	useEffect(() => {
 		const scanner = new Html5QrcodeScanner("qr-reader", {
-			fps: 10,
-			qrbox: 250,
+			fps: 30,
+			qrbox: 300,
 		});
 		scanner.render(onScanSuccess, onScanFailure);
 
@@ -100,7 +99,7 @@ const ScanInvigilator = ({ invigilator }) => {
 						placeholder={`Nhập Mã giảng viên ${invigilator}`}
 						value={manualInput}
 						onChange={(e) => setManualInput(e.target.value)}
-						className="text-center p-2 w-3/5 mx-auto my-0 rounded-lg border border-solid border-gray-300"
+						className="text-center py-3 w-7/12 mx-auto my-0 rounded-lg border border-solid border-gray-300"
 					/>
 					<button
 						onClick={handleSubmit}
