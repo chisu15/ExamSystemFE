@@ -11,48 +11,42 @@ const ScanInvigilator = ({ invigilator }) => {
 	const [submitStatus, setSubmitStatus] = useState("");
 	const navigate = useNavigate();
 
+	// Xử lý QR code quét thành công
 	const onScanSuccess = (decodedText) => {
 		console.log(`Scanned code: ${decodedText}`);
-		// Xử lý QR code đã quét được
+		setInvigilatorCode(decodedText); // Cập nhật mã giám thị sau khi quét
 	};
 
+	// Xử lý lỗi khi quét QR code
 	const onScanFailure = (error) => {
 		console.warn(`QR Code scan error: ${error}`);
 	};
 
-	const handleScan = (data) => {
-		if (data) {
-			// Extract the `text` field from the scanned QR code data
-			setInvigilatorCode(data.text);
-		}
-	};
-
-	const handleError = (err) => {
-		console.error(err);
-	};
-
+	// Xử lý gửi dữ liệu sau khi quét hoặc nhập thủ công
 	const handleSubmit = async () => {
 		const code = invigilatorCode || manualInput;
-		const obj = JSON.parse(code);
-		console.log(obj);
 
-		const shiftId = 1; // Replace with the actual shift_id from your data
-		console.log(code);
-
-		const data = {
-			shift_id: shiftId,
-			teacher_code: obj.teacher_code,
-		};
-		console.log(data);
 		try {
+			const obj = JSON.parse(code); // Giả sử dữ liệu QR code là JSON
+			console.log(obj);
+
+			const shiftId = 1; // Thay thế bằng shift_id thực tế của bạn
+
+			const data = {
+				shift_id: shiftId,
+				teacher_code: obj.teacher_code,
+			};
+			console.log(data);
+
 			const response = await axios.post(
 				`http://${global.ip}:8080/api/v1/user-examshift/confirm-scan`,
 				data
 			);
+
 			if (response.data.code === 200) {
 				setSubmitStatus("Scan confirmed successfully.");
 				setTimeout(() => {
-					navigate("/"); // Redirect back to the main page after submission
+					navigate("/"); // Chuyển về trang chính sau khi xác nhận
 				}, 2000);
 			} else {
 				setSubmitStatus("Failed to confirm scan.");
@@ -63,6 +57,7 @@ const ScanInvigilator = ({ invigilator }) => {
 		}
 	};
 
+	// Khởi tạo `Html5QrcodeScanner`
 	useEffect(() => {
 		const scanner = new Html5QrcodeScanner("qr-reader", {
 			fps: 10,
@@ -71,14 +66,9 @@ const ScanInvigilator = ({ invigilator }) => {
 		scanner.render(onScanSuccess, onScanFailure);
 
 		return () => {
-			scanner.clear();
+			scanner.clear(); // Xóa bộ quét khi component bị unmount
 		};
 	}, []);
-
-	// const previewStyle = {
-	// 	height: 240,
-	// 	width: 320,
-	// };
 
 	return (
 		<div className="">
@@ -91,20 +81,19 @@ const ScanInvigilator = ({ invigilator }) => {
 						Hoặc nhập trực tiếp mã
 					</span>
 				</p>
-
 				<div
 					id="qr-reader"
-					className="mx-auto w-4/12 rounded-xl mb-5 shadow-lg"
+					className="mx-auto w-7/12 rounded-xl mb-5 shadow-lg"
 				></div>
 				{/* <QrScanner
 					delay={300}
 					onError={handleError}
 					onScan={handleScan}
 				/> */}
-				<p className="text-center font-semibold text-lg">
+				<p className="text-center font-semibold text-lg my-6">
 					Mã quét được: <br /> {invigilatorCode}
 				</p>
-				<div className=" border-b-2 border-b-[solid] my-3"></div>
+				{/* <div className=" border-b-2 border-b-[solid] my-3"></div> */}
 				<div className="flex flex-col gap-3 w-screen justify-center text-center align-middle">
 					<input
 						type="text"
@@ -115,7 +104,7 @@ const ScanInvigilator = ({ invigilator }) => {
 					/>
 					<button
 						onClick={handleSubmit}
-						className="bg-green-500 py-3 w-36 rounded-lg font-semibold text-[white] mx-auto my-0"
+						className="bg-green-500 py-3 w-7/12 rounded-lg font-semibold text-[white] mx-auto my-0"
 					>
 						Xác nhận
 					</button>
