@@ -1,0 +1,71 @@
+.mainContainer {
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-image: url("https://ptit.edu.vn/wp-content/uploads/2024/09/banner-ptit-portal.webp");
+    background-blend-mode: overlay;
+    background-color: rgba(0, 0, 0, 0.4);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center; 
+    overflow-y: hidden;
+  }
+  .titleContainer {
+    display: flex;
+    flex-direction: column;
+    font-size: 64px;
+    font-weight: bolder;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .resultContainer,
+  .historyItem {
+    flex-direction: row;
+    display: flex;
+    width: 400px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .historyContainer {
+    flex-direction: column;
+    display: flex;
+    height: 200px;
+    align-items: center;
+    flex-grow: 5;
+    justify-content: flex-start;
+  }
+  
+  .buttonContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 260px;
+  }
+  
+  .inputContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    min-width: 45vw;
+  }
+  
+  .inputContainer > .errorLabel {
+    color: red;
+    font-size: 12px;
+  }
+  
+  .inputBox {
+    height: 48px;
+    width: 100%;
+    font-size: large;
+    border-radius: 8px;
+    border: 1px solid grey;
+    padding-left: 8px;
+    outline: none;
+  }

@@ -1,41 +1,68 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import QrScanner from "react-qr-scanner";
 import Back from "../Back/back.js";
 import { Html5QrcodeScanner } from "html5-qrcode";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import global from "../../global.js";
+import useAuth from "../../hooks/Auth/useAuth.js"; 
+import Cookies from "js-cookie";
 
 const ScanInvigilator = ({ invigilator }) => {
+	useAuth(); 
+
 	const [invigilatorCode, setInvigilatorCode] = useState("");
 	const [manualInput, setManualInput] = useState("");
 	const [submitStatus, setSubmitStatus] = useState("");
+	const [isScanned, setIsScanned] = useState(false); 
+	const [scanner, setScanner] = useState(null);
 	const navigate = useNavigate();
+	const { id } = useParams();
+	const sessionId = Cookies.get("session_id");
 
 	const onScanSuccess = (decodedText) => {
-		const obj = JSON.parse(decodedText);
-		console.log(obj);
-		console.log(`Scanned code: ${decodedText}`);
-		setInvigilatorCode(obj.teacher_code);
+		if (!isScanned) {
+			try {
+				const obj = JSON.parse(decodedText);
+				setInvigilatorCode(obj.teacher_code);
+
+
+				toast.success("Quét mã thành công!");
+				
+				setIsScanned(true);
+
+				if (scanner) {
+					scanner.clear();
+				}
+			} catch (error) {
+				console.error("Error parsing QR code:", error);
+				toast.error("Mã QR không hợp lệ.");
+			}
+		}
 	};
 
+
 	const onScanFailure = (error) => {
-		console.warn(`QR Code scan error: ${error}`);
+		if (!isScanned) {
+			console.warn(`QR Code scan error: ${error}`);
+		}
 	};
 
 	const handleSubmit = async () => {
 		const code = invigilatorCode || manualInput;
+		console.log("code:.....", code);
 
 		try {
-			const obj = JSON.parse(code);
-			console.log(obj);
-
-			const shiftId = 1;
+			// const obj = JSON.parse(code);
+			const shiftId = id;
 
 			const data = {
+				session_id: sessionId,
 				shift_id: shiftId,
-				teacher_code: obj.teacher_code,
+				teacher_code: code,
 			};
-			console.log(data);
+			console.log("1231231221", data);
 
 			const response = await axios.post(
 				`http://${global.ip}:8080/api/v1/user-examshift/confirm-scan`,
@@ -45,33 +72,39 @@ const ScanInvigilator = ({ invigilator }) => {
 			if (response.data.code === 200) {
 				setSubmitStatus("Scan confirmed successfully.");
 				setTimeout(() => {
-					navigate("/"); // Chuyển về trang chính sau khi xác nhận
+					toast.success("Xác nhận thành công!");
 				}, 2000);
 			} else {
+				toast.error("Xác nhận thất bại");
 				setSubmitStatus("Failed to confirm scan.");
 			}
 		} catch (error) {
 			console.error("Error confirming scan", error);
 			setSubmitStatus("An error occurred while confirming the scan.");
+			toast.error("Xác nhận thất bại");
 		}
 	};
 
 	// Khởi tạo `Html5QrcodeScanner`
 	useEffect(() => {
-		const scanner = new Html5QrcodeScanner("qr-reader", {
+		const newScanner = new Html5QrcodeScanner("qr-reader", {
 			fps: 30,
-			qrbox: 300,
+			qrbox: 400,
+			aspectRatio: 0.5 / 0.25,
 		});
-		scanner.render(onScanSuccess, onScanFailure);
 
+		newScanner.render(onScanSuccess, onScanFailure);
+		setScanner(newScanner);
 		return () => {
-			scanner.clear(); // Xóa bộ quét khi component bị unmount
+			if (newScanner) {
+				newScanner.clear();
+			}
 		};
 	}, []);
 
 	return (
 		<div className="">
-			<Back></Back>
+			<Back />
 			<div className="flex-col">
 				<p className="text-center font-semibold text-2xl mb-4">
 					Quét QR giám thị {invigilator}
@@ -84,11 +117,6 @@ const ScanInvigilator = ({ invigilator }) => {
 					id="qr-reader"
 					className="mx-auto w-7/12 rounded-xl mb-5 shadow-lg"
 				></div>
-				{/* <QrScanner
-					delay={300}
-					onError={handleError}
-					onScan={handleScan}
-				/> */}
 				<p className="text-center font-semibold text-lg my-6">
 					Mã quét được: <br /> {invigilatorCode}
 				</p>
@@ -106,6 +134,7 @@ const ScanInvigilator = ({ invigilator }) => {
 						className="bg-green-500 py-3 w-7/12 rounded-lg font-semibold text-[white] mx-auto my-0"
 					>
 						Xác nhận
+						<ToastContainer />
 					</button>
 					{submitStatus && <p>{submitStatus}</p>}
 				</div>

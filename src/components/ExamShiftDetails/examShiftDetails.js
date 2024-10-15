@@ -6,11 +6,13 @@ import "./examShiftDetails.css";
 import Back from "../Back/back.js";
 import global from "../../global.js";
 import InvigilatorButtons from "../InvigilatorButton/invigilatorButton.js";
+import useAuth from "../../hooks/Auth/useAuth.js"; 
 
 const ExamShiftDetails = () => {
-	const { id } = useParams();
+	useAuth(); 
+	const { examCode } = useParams();
 	const navigate = useNavigate();
-	console.log(id);
+	console.log(examCode);
 
 	const [examShift, setExamShift] = useState(null);
 	const [loading, setLoading] = useState(true);
@@ -21,7 +23,7 @@ const ExamShiftDetails = () => {
 		const fetchExamShiftDetails = async () => {
 			try {
 				const response = await axios.post(
-					`http://${global.ip}:8080/api/v1/exam-shifts/detail/${id}`
+					`http://${global.ip}:8080/api/v1/exam-shifts/detail-byExamCode/${examCode}`
 				);
 				if (response.data.code === 200) {
 					setExamShift(response.data.examShift);
@@ -42,7 +44,7 @@ const ExamShiftDetails = () => {
 		}, 1000);
 
 		return () => clearTimeout(timer);
-	}, [id]);
+	}, [examCode]);
 
 	if (loading || !showContent) {
 		return (
@@ -71,39 +73,39 @@ const ExamShiftDetails = () => {
 
 	return (
 		<div>
-			<Back></Back>
+			{/* <Back></Back> */}
 			<h1 className="text-3xl font-bold text-center mb-5">
 				{examShift.subject_name}
 			</h1>
-			<div className="flex flex-col items-center gap-5 w-fit mx-auto px-3">
-				<div className="flex justify-between w-full">
-					<div className="flex flex-col items-center">
-						<span className="text-gray-500">Trạng thái</span>
+			<div className="flex flex-col items-center gap-5 w-full md:w-fit mx-auto px-3">
+				<div className="flex flex-wrap justify-between w-full gap-4">
+					<div className="flex flex-col items-center flex-1">
+						<span className="text-gray-500 whitespace-nowrap">Trạng thái</span>
 						<span className={`${getStatusClass(examShift.status)}`}>
 							{examShift.status}
 						</span>
 					</div>
-					<div className="flex flex-col items-center">
+					<div className="flex flex-col items-center flex-1">
 						<span className="text-gray-500">Lớp</span>
-						<span className="font-semibold text-2xl">
+						<span className="font-semibold text-2xl whitespace-nowrap">
 							{examShift.classroom}-{examShift.building}
 						</span>
 					</div>
-					<div className="flex flex-col items-center">
-						<span className="text-gray-500">Kíp</span>
+					<div className="flex flex-col items-center flex-1">
+						<span className="text-gray-500 whitespace-nowrap">Kíp</span>
 						<span className="font-semibold text-2xl">
 							{examShift.shift}
 						</span>
 					</div>
 				</div>
-				<div className="flex gap-10">
-					<div className="flex flex-col items-center">
-						<span className="text-gray-500">Mã môn học</span>
+				<div className="flex flex-wrap gap-10 md:flex-row w-full justify-around">
+					<div className="flex flex-col items-center flex-1">
+						<span className="text-gray-500 whitespace-nowrap">Mã môn học</span>
 						<span className="font-semibold text-2xl">
 							{examShift.subject_code}
 						</span>
 					</div>
-					<div className="flex flex-col items-center">
+					<div className="flex flex-col items-center flex-1 md:mt-0">
 						<span className="text-gray-500">Thời gian bắt đầu</span>
 						<span className="font-semibold text-2xl">
 							{new Date(
@@ -111,19 +113,27 @@ const ExamShiftDetails = () => {
 							).toLocaleDateString("en-GB")}
 						</span>
 					</div>
-					<div className="flex flex-col items-center">
-						<span className="text-gray-500">Hình thức thi</span>
+					<div className="flex flex-col items-center flex-1">
+						<span className="text-gray-500 whitespace-nowrap">Hình thức thi</span>
 						<span className="font-semibold text-2xl">
 							{examShift.exam_format}
 						</span>
 					</div>
 				</div>
 			</div>
+
 			<div className="flex flex-wrap justify-around mt-10">
 				{" "}
-				<InvigilatorButtons invigilatorNumber={1} teacherCode={examShift.invigilator_1}/>
-				<InvigilatorButtons invigilatorNumber={2} teacherCode={examShift.invigilator_2}/>
-				{" "}
+				<InvigilatorButtons
+					invigilatorNumber={1}
+					examCode={examCode}
+					shiftId={examShift.id}
+				/>
+				<InvigilatorButtons
+					invigilatorNumber={2}
+					examCode={examCode}
+					shiftId={examShift.id}
+				/>{" "}
 			</div>
 		</div>
 	);

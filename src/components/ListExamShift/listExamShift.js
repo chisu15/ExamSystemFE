@@ -3,13 +3,16 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import global from "../../global.js"
+import useAuth from "../../hooks/Auth/useAuth.js"; 
 
 const ListExamShift = () => {
+	useAuth(); 
+
 	const [listExamShift, setListExamShift] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [showContent, setShowContent] = useState(false);
-	console.log(global.abc);
+
 	useEffect(() => {
 		const fetchExamShift = async () => {
 			try {
