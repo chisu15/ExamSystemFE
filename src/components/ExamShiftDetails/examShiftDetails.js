@@ -15,6 +15,7 @@ const ExamShiftDetails = () => {
 	console.log(examCode);
 
 	const [examShift, setExamShift] = useState(null);
+	const [userExamShift, setUserExamShift] = useState(null)
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [showContent, setShowContent] = useState(false);
@@ -27,6 +28,7 @@ const ExamShiftDetails = () => {
 				);
 				if (response.data.code === 200) {
 					setExamShift(response.data.examShift);
+					setUserExamShift(response.data.userExamShift || [])
 				} else {
 					setError("Failed to fetch exam shift details.");
 				}
@@ -123,17 +125,22 @@ const ExamShiftDetails = () => {
 			</div>
 
 			<div className="flex flex-wrap justify-around mt-10">
-				{" "}
-				<InvigilatorButtons
-					invigilatorNumber={1}
-					examCode={examCode}
-					shiftId={examShift.id}
-				/>
-				<InvigilatorButtons
-					invigilatorNumber={2}
-					examCode={examCode}
-					shiftId={examShift.id}
-				/>{" "}
+
+					<InvigilatorButtons
+						invigilatorNumber={1}
+						examCode={examCode}
+						shiftId={examShift.id}
+						state={userExamShift[0]?.state || "0"} 
+					/>
+
+
+					<InvigilatorButtons
+						invigilatorNumber={2}
+						examCode={examCode}
+						shiftId={examShift.id}
+						state={userExamShift[1]?.state || "0"} 
+					/>
+
 			</div>
 		</div>
 	);

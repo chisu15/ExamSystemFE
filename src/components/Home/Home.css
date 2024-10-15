@@ -1,0 +1,14 @@
+.homeContainer {
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-image: url("https://ptit.edu.vn/wp-content/uploads/2024/09/banner-ptit-portal.webp");
+    background-blend-mode: overlay;
+    background-color: rgba(0, 0, 0, 0.4);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center; 
+    overflow-y: hidden;
+  }

@@ -1,7 +1,8 @@
 import { Routes, Route, useLocation } from "react-router-dom";
-import ListExamShift from "./components/ListExamShift/listExamShift.js";
+// import ListExamShift from "./components/ListExamShift/listExamShift.js";
 import ExamShiftDetails from "./components/ExamShiftDetails/examShiftDetails.js";
 import ScanInvigilator from "./components/ScanInvigilator/scanInvigilator.js";
+import Home from "./components/Home/Home.js";
 import NavBar from "./components/Navbar/navbar.js";
 import React from "react";
 import global from "./global.js";
@@ -9,8 +10,8 @@ import Login from "./components/Login/login.js";
 
 function App() {
   // global.ip = "localhost";
-  // global.ip = "192.168.1.197";
-  global.ip = "10.171.17.184";
+  global.ip = "192.168.1.197";
+  // global.ip = "10.171.17.11";
 
   // Sử dụng useLocation để lấy đường dẫn hiện tại
   const location = useLocation();
@@ -18,10 +19,10 @@ function App() {
   return (
     <div className="overflow-x-hidden">
       {/* Hiển thị NavBar trừ trang /login */}
-      {location.pathname !== "/login" && <NavBar />}
+      {location.pathname !== "/login" || "/" && <NavBar />}
       
       <Routes>
-        {/* <Route path="/" element={<ListExamShift />} /> */}
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/exam-shift/:examCode" element={<ExamShiftDetails />} />
         <Route path="/scan-invigilator-1/:examCode/:id" element={<ScanInvigilator invigilator="1" />} />

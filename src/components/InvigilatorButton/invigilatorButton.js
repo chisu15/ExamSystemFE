@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import global from "../../global.js";
 
-const InvigilatorButton = ({ invigilatorNumber, examCode, shiftId }) => {
+const InvigilatorButton = ({ invigilatorNumber, examCode, shiftId, state }) => {
 	const navigate = useNavigate();
 	// const { examCode } = useParams();
 	const [dataUser, setDataUser] = useState(null); // State để lưu dữ liệu của user
@@ -13,13 +13,8 @@ const InvigilatorButton = ({ invigilatorNumber, examCode, shiftId }) => {
 			const response = await axios.post(
 				`http://${global.ip}:8080/api/v1/users/detail-byCode/${examCode}`
 			);
-			
-			// Gán dữ liệu trả về từ API vào state dataUser
 			if (response.status === 200) {
 				setDataUser(response.data);
-				console.log("User Data: ", response.data);
-				
-				// Điều hướng đến trang scan với dữ liệu người dùng đã lấy được
 				navigate(`/scan-invigilator-${invigilatorNumber}/${examCode}/${shiftId}`);
 			} else {
 				console.error("Failed to fetch user data");
@@ -35,8 +30,13 @@ const InvigilatorButton = ({ invigilatorNumber, examCode, shiftId }) => {
 				Quét QR cho Giám thị {invigilatorNumber}
 			</span>
 			<button
-				className="bg-blue-500 rounded-3xl p-2 hover:bg-blue-600 hover:shadow-xl transition-all mt-3"
-				onClick={handleCheckAndCreate}
+				className={`rounded-3xl p-2 transition-all mt-3 hover:shadow-xl ${
+					state === "1"
+						? "bg-green-600 cursor-not-allowed"
+						: "bg-blue-500 hover:bg-blue-600 cursor-pointer"
+				}`}
+				onClick={state == "1" ? undefined : handleCheckAndCreate}
+				disabled={state === "1"} 
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -51,5 +51,6 @@ const InvigilatorButton = ({ invigilatorNumber, examCode, shiftId }) => {
 		</div>
 	);
 };
+
 
 export default InvigilatorButton;

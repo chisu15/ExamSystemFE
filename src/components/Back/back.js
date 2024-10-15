@@ -4,11 +4,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-const Back = () => {
+const Back = (examCode) => {
 	const navigate = useNavigate();
 	return (
 		<div className="my-2 ">
-			<button className="w-fit text-left" onClick={() => navigate(-1)}>
+			<button className="w-fit text-left" onClick={() => navigate(`/exam-shift/${examCode}`)}>
 				<div className="back-button w-fit flex text-left justify-center align-middle text-nowrap flex-nowrap">
 					<div>
 						<svg
