@@ -159,7 +159,7 @@ import global from "../../global.js";
 import useAuth from "../../hooks/Auth/useAuth.js"; 
 import Cookies from "js-cookie";
 
-const ScanInvigilator = ({ invigilator }) => {
+const ScanInvigilator = ({ invigilator, examCodeProp }) => {
 	useAuth(); 
 
 	const [invigilatorCode, setInvigilatorCode] = useState("");
@@ -169,6 +169,8 @@ const ScanInvigilator = ({ invigilator }) => {
 	const [scanner, setScanner] = useState(null);
 	const navigate = useNavigate();
 	const { examCode, id } = useParams();
+	console.log({ examCode, id });
+	
 	const sessionId = Cookies.get("session_id");
 
 	// Function for handling successful scan
@@ -176,7 +178,7 @@ const ScanInvigilator = ({ invigilator }) => {
 		if (!isScanned) {
 			try {
 				const obj = JSON.parse(decodedText);
-				setInvigilatorCode(obj.teacher_code);
+				setInvigilatorCode(decodedText);
 
 				toast.success("Quét mã thành công!");
 				

@@ -9,8 +9,8 @@ import global from "./global.js";
 import Login from "./components/Login/login.js";
 
 function App() {
-  // global.ip = "localhost";
-  global.ip = "192.168.1.197";
+  global.ip = "localhost";
+  // global.ip = "192.168.1.197";
   // global.ip = "10.171.17.11";
 
   // Sử dụng useLocation để lấy đường dẫn hiện tại
@@ -19,8 +19,7 @@ function App() {
   return (
     <div className="overflow-x-hidden">
       {/* Hiển thị NavBar trừ trang /login */}
-      {location.pathname !== "/login" || "/" && <NavBar />}
-      
+      {location.pathname !== "/login" && <NavBar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />

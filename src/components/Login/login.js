@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios"; // Import Axios
 import { ToastContainer, toast } from "react-toastify"; // Import react-toastify
@@ -13,10 +13,19 @@ const Login = (props) => {
         password: "",
     });
     console.log(useParams());
-    
+
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
     const navigate = useNavigate();
+
+    useEffect(() => {
+        toast.info("Yêu cầu đăng nhập để vào trang quét mã", {
+            position: "top-center",
+            autoClose: 10000, 
+        });
+    }, []);
+    
+
     const loginUser = async (loginData) => {
         try {
             const response = await axios.post(
@@ -24,23 +33,19 @@ const Login = (props) => {
                 loginData
             );
             console.log(response.data, "|", response.status);
-            
+
             if (response.status === 200 || response.data.code === 200) {
                 const data = response.data;
-                const sessionId = data.session_id || response.headers['session_id'];
+                const sessionId = data.session_id || response.headers["session_id"];
                 const expireTime = new Date(data.expire_at);
-                Cookies.set("session_id", sessionId, { expires: expireTime , path: "/" });
+                Cookies.set("session_id", sessionId, { expires: expireTime, path: "/" });
                 axios.defaults.headers.common["session_id"] = sessionId;
-                toast.success(
-                    response.data.message || "Đăng nhập thành công"
-                );
+                toast.success(response.data.message || "Đăng nhập thành công");
                 const redirectUrl = sessionStorage.getItem("redirectAfterLogin") || "/";
                 sessionStorage.removeItem("redirectAfterLogin");
                 navigate(redirectUrl);
             } else {
-                toast.error(
-                    response.data.message || "Đăng nhập không thành công"
-                );
+                toast.error(response.data.message || "Đăng nhập không thành công");
             }
         } catch (error) {
             console.log("Error Response: ", error.response);
@@ -53,6 +58,7 @@ const Login = (props) => {
             }
         }
     };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setForm({
@@ -60,6 +66,7 @@ const Login = (props) => {
             [name]: value,
         });
     };
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
