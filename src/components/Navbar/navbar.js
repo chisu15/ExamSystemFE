@@ -3,7 +3,7 @@ import React from "react";
 
 const NavBar = () => {
 	return (
-		<div className="flex bg-red-500 items-center py-3 gap-3 w-screen m-0">
+		<div className="flex fixed bg-red-500 items-center py-3 gap-3 w-screen m-0">
 			<div className="flex justify-center align-middle h-10 w-10 bg-white rounded-lg text-center p-1 mx-2">
 				<img
 					src="/Logo_PTIT_University.png"

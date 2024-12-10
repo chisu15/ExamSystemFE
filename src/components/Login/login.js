@@ -40,9 +40,15 @@ const Login = (props) => {
                 const expireTime = new Date(data.expire_at);
                 Cookies.set("session_id", sessionId, { expires: expireTime, path: "/" });
                 axios.defaults.headers.common["session_id"] = sessionId;
+                if (data.user.role_id === 4) {
+                    toast.success("Đăng nhập thành công với vai trò quản trị viên.");
+                    navigate(`/user/${response.data.user.id}`);
+                    return;
+                }
                 toast.success(response.data.message || "Đăng nhập thành công");
                 const redirectUrl = sessionStorage.getItem("redirectAfterLogin") || "/";
                 sessionStorage.removeItem("redirectAfterLogin");
+
                 navigate(redirectUrl);
             } else {
                 toast.error(response.data.message || "Đăng nhập không thành công");
