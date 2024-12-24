@@ -31,7 +31,7 @@ const UserDetails = () => {
           return;
         }
         const userResponse = await axios.post(
-          `http://${global.ip}:8080/api/v1/users/detail/${id}`
+          `${global.ip}/api/v1/users/detail/${id}`
         );
 
         if (userResponse.data.code === 200) {
@@ -43,7 +43,7 @@ const UserDetails = () => {
           // Fetch QR Code
           try {
             const qrResponse = await axios.post(
-              `http://${global.ip}:8080/api/v1/users/qr-code/${id}`,
+              `${global.ip}/api/v1/users/qr-code/${id}`,
               { responseType: "blob" }
             );
             if (qrResponse.status === 200) {

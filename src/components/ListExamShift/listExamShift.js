@@ -17,7 +17,7 @@ const ListExamShift = () => {
 		const fetchExamShift = async () => {
 			try {
 				const response = await axios.post(
-					`http://${global.ip}:8080/api/v1/exam-shifts/`
+					`${global.ip}/api/v1/exam-shifts/`
 				); // Replace with your API URL
 				if (response.data.code === 200) {
 					setListExamShift(response.data.examShift); // Assuming response.data.examShift is an array

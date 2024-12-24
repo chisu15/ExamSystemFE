@@ -66,7 +66,7 @@
 // 			console.log("1231231221", data);
 
 // 			const response = await axios.post(
-// 				`http://${global.ip}:8080/api/v1/user-examshift/confirm-scan`,
+// 				`${global.ip}/api/v1/user-examshift/confirm-scan`,
 // 				data
 // 			);
 
@@ -218,7 +218,7 @@ const ScanInvigilator = ({ invigilator, examCodeProp }) => {
 			console.log("1231231221", data);
 
 			const response = await axios.post(
-				`http://${global.ip}:8080/api/v1/user-examshift/confirm-scan`,
+				`${global.ip}/api/v1/user-examshift/confirm-scan`,
 				data
 			);
 
@@ -358,7 +358,7 @@ export default ScanInvigilator;
 // 			console.log("1231231221", data);
 
 // 			const response = await axios.post(
-// 				`http://${global.ip}:8080/api/v1/user-examshift/confirm-scan`,
+// 				`${global.ip}/api/v1/user-examshift/confirm-scan`,
 // 				data
 // 			);
 

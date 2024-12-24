@@ -24,7 +24,7 @@ const ExamShiftDetails = () => {
 		const fetchExamShiftDetails = async () => {
 			try {
 				const response = await axios.post(
-					`http://${global.ip}:8080/api/v1/exam-shifts/detail-byExamCode/${examCode}`
+					`${global.ip}/api/v1/exam-shifts/detail-byExamCode/${examCode}`
 				);
 				if (response.data.code === 200) {
 					setExamShift(response.data.examShift);

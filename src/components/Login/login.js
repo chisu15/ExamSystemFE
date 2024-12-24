@@ -29,7 +29,7 @@ const Login = (props) => {
     const loginUser = async (loginData) => {
         try {
             const response = await axios.post(
-                `http://${global.ip}:8080/api/v1/users/login`,
+                `${global.ip}/api/v1/users/login`,
                 loginData
             );
             console.log(response.data, "|", response.status);

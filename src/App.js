@@ -10,7 +10,7 @@ import UserDetails from "./components/DetailUser/detail.js";
 import global from "./global.js";
 
 function App() {
-  global.ip = "localhost";
+  global.ip = "http://localhost:8080";
   // global.ip = "192.168.2.105";
   // global.ip = "10.171.17.11";
 
