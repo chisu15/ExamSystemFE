@@ -39,8 +39,9 @@ const Login = (props) => {
                 const sessionId = data.session_id || response.headers["session_id"];
                 const expireTime = new Date(data.expire_at);
                 Cookies.set("session_id", sessionId, { expires: expireTime, path: "/" });
+                Cookies.set("user_id", data.user.id, { expires: expireTime, path: "/" });
                 axios.defaults.headers.common["session_id"] = sessionId;
-                if (data.user.role_id === 4) {
+                if (data.user.role_id) {
                     toast.success("Đăng nhập thành công với vai trò quản trị viên.");
                     navigate(`/user/${response.data.user.id}`);
                     return;
