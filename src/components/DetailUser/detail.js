@@ -19,7 +19,7 @@ const UserDetails = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
-  // Fetch user details and associated data
+
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
@@ -40,7 +40,7 @@ const UserDetails = () => {
           setExamShift(shiftData || []);
           setTotalCost(totalCost || 0);
 
-          // Fetch QR Code
+        
           try {
             const qrResponse = await axios.post(
               `${global.ip}/api/v1/users/qr-code/${id}`,
@@ -68,13 +68,13 @@ const UserDetails = () => {
     fetchUserDetails();
   }, [id, navigate]);
 
-  // Pagination logic
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = examShift.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(examShift.length / itemsPerPage);
 
-  // Handlers
+
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
   const handleItemsPerPageChange = (e) => {
     setItemsPerPage(Number(e.target.value));
@@ -91,16 +91,16 @@ const UserDetails = () => {
 
   const renderPagination = () => {
     const pages = [];
-    const maxPageButtons = 5; // Maximum number of page buttons displayed
+    const maxPageButtons = 5;
     let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
     let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
 
-    // Adjust startPage if endPage exceeds totalPages
+  
     if (endPage === totalPages) {
       startPage = Math.max(1, totalPages - maxPageButtons + 1);
     }
 
-    // Add numbered page buttons
+  
     for (let i = startPage; i <= endPage; i++) {
       pages.push(
         <button
@@ -124,16 +124,18 @@ const UserDetails = () => {
   if (error) return <div>{error}</div>;
 
   const formatDateTime = (dateString) => {
-    const options = {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    };
-    return new Intl.DateTimeFormat("vi-VN", options).format(new Date(dateString));
-  };
+    const date = new Date(dateString);
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const year = date.getUTCFullYear();
+
+    return `${hours}:${minutes}:${seconds} ${day}/${month}/${year}`;
+};
+  
+  
   return (
     <div className="p-5 bg-gray-100 min-h-screen">
       {/* User Information */}

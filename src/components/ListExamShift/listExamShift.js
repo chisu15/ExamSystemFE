@@ -73,7 +73,7 @@ const ListExamShift = () => {
 						<h2>Subject: {examShift.subject_name}</h2>
 						<p>
 							Date:{" "}
-							{new Date(examShift.date).toLocaleDateString()}
+							{examShift.date}
 						</p>
 						<p>Shift: {examShift.shift}</p>
 						<p>Classroom: {examShift.classroom}</p>
