@@ -1,0 +1,180 @@
+.user-details-container {
+  padding: 24px;
+  background-color: #f3f4f6;
+  min-height: 100vh;
+}
+
+.tabs-header {
+  display: flex;
+  justify-content: center;
+  margin-top: 80px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  font-weight: 600;
+  background-color: #e5e7eb;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tab-btn:hover {
+  background-color: #d1d5db;
+}
+.tab-btn.active {
+  background-color: #2563eb;
+  color: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+.tab-content {
+  margin-top: 30px;
+}
+
+.info-card {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px;
+}
+.info-card .label {
+  font-weight: 600;
+  color: #4b5563;
+}
+.info-card .value {
+  color: #111827;
+}
+
+.summary-cards {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.summary-item {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px 24px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: center;
+}
+.summary-item h2 {
+  color: #2563eb;
+  font-size: 20px;
+  margin-top: 4px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.history-card {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.history-card h3 {
+  font-weight: 600;
+  color: #1d4ed8;
+}
+
+.empty-state {
+  text-align: center;
+  color: #6b7280;
+  font-style: italic;
+  margin-top: 20px;
+}
+
+.btn.blue {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn.blue:hover {
+  background-color: #1d4ed8;
+}
+/* Responsive bảng ở tab Lịch coi thi */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* mượt trên iOS */
+  margin-top: 10px;
+  border-radius: 8px;
+}
+
+/* Cải thiện UX khi vuốt */
+.table-responsive::-webkit-scrollbar {
+  height: 6px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.35);
+}
+
+/* Giữ bảng trông đẹp cả desktop */
+.faculty-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px; /* để đảm bảo có thể scroll khi mobile */
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.faculty-table th,
+.faculty-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+  white-space: nowrap; /* tránh text xuống dòng */
+}
+
+.faculty-table th {
+  background: #f7fafc;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.faculty-table tr:hover {
+  background: #f1f5f9;
+}
+
+/* Mobile tối ưu thêm */
+@media (max-width: 768px) {
+  .faculty-table th,
+  .faculty-table td {
+    padding: 8px 10px;
+    font-size: 0.95rem;
+  }
+
+  .table-responsive {
+    margin-bottom: 15px;
+  }
+}
+.summary-item {
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.exam-round-card {
+  transition: all 0.3s ease;
+}
+.exam-round-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}

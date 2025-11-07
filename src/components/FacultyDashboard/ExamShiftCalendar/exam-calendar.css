@@ -1,0 +1,481 @@
+/* === VÙNG LỊCH CHÍNH === */
+.exam-calendar-wrapper {
+  margin: 80px auto;
+  max-width: 1200px;
+  background-color: #f7fafc;
+  border-radius: 12px;
+  padding-bottom: 40px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, #3182ce, #63b3ed);
+  padding: 14px 22px;
+  color: white;
+  border-radius: 12px 12px 0 0;
+  font-weight: 600;
+}
+
+.back-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.calendar-card {
+  background-color: white;
+  border-radius: 10px;
+  margin: 24px;
+  padding: 14px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+.calendar-legend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+  font-size: 0.95rem;
+  color: #2d3748;
+  margin-top: 8px;
+}
+.legend-box {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  border-radius: 4px;
+  margin-right: 6px;
+  border: 1px solid #cbd5e0;
+}
+.legend-box.has-shift {
+  background-color: #ebf8ff;
+  border-color: #63b3ed;
+}
+.legend-box.empty {
+  background-color: #fff;
+}
+
+/* === POPUP === */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+  backdrop-filter: blur(3px);
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 20px 24px;
+  width: 92%;
+  max-width: 480px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+  animation: popupFadeIn 0.25s ease-in-out;
+}
+
+.modal-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2d3748;
+  text-align: center;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 6px;
+}
+
+.shift-list {
+  flex: 1;
+  overflow-y: auto;
+  margin: 10px 0;
+  padding-right: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: #a0aec0 #edf2f7;
+}
+.shift-list::-webkit-scrollbar {
+  width: 6px;
+}
+.shift-list::-webkit-scrollbar-thumb {
+  background: #a0aec0;
+  border-radius: 6px;
+}
+.shift-list::-webkit-scrollbar-thumb:hover {
+  background: #718096;
+}
+
+.shift-item {
+  background: #edf2f7;
+  margin: 8px 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+.shift-item:hover {
+  background: #e2e8f0;
+}
+.shift-item.selected {
+  background: #bee3f8;
+  border-left: 5px solid #3182ce;
+}
+
+/* === SELECT GIẢNG VIÊN === */
+.lecturer-select {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lecturer-select label {
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 0.95rem;
+}
+.lecturer-select select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #2d3748;
+  background-color: #fff;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #4a5568 50%),
+                    linear-gradient(135deg, #4a5568 50%, transparent 50%);
+  background-position: calc(100% - 15px) calc(1em + 2px),
+                       calc(100% - 10px) calc(1em + 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.lecturer-select select:focus {
+  outline: none;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.25);
+}
+
+/* === NÚT HÀNH ĐỘNG (CẢ POPUP & PREVIEW) === */
+.modal-actions,
+.assign-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #e2e8f0;
+}
+.btn {
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+.btn.confirm {
+  background-color: #48bb78;
+  color: white;
+}
+.btn.reset {
+  background-color: #ecc94b;
+}
+.btn.cancel {
+  background-color: #e53e3e;
+  color: white;
+}
+.btn:hover {
+  filter: brightness(1.05);
+}
+.btn:active {
+  transform: scale(0.97);
+}
+
+/* === BẢNG PREVIEW === */
+.assign-preview {
+  margin: 24px;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 18px 22px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+.assign-preview h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 10px;
+}
+.assign-preview table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.assign-preview th,
+.assign-preview td {
+  border: 1px solid #e2e8f0;
+  padding: 8px 10px;
+  text-align: left;
+}
+.assign-preview th {
+  background: #f7fafc;
+  color: #2d3748;
+  font-weight: 600;
+}
+.btn-remove {
+  background: #fed7d7;
+  border: none;
+  color: #c53030;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-remove:hover {
+  background: #feb2b2;
+}
+.btn-remove:active {
+  transform: scale(0.97);
+}
+
+/* === ANIMATION === */
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === MOBILE RESPONSIVE === */
+@media (max-width: 768px) {
+  .exam-calendar-wrapper {
+    margin: 60px auto;
+    border-radius: 8px;
+  }
+
+  .calendar-header {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+  }
+
+  .calendar-card {
+    margin: 14px;
+    padding: 8px;
+  }
+
+  .lecturer-select select {
+    font-size: 1rem;
+    padding: 12px 14px;
+    border-radius: 10px;
+  }
+
+  .assign-preview {
+    margin: 14px;
+    padding: 14px;
+  }
+
+  .assign-preview table {
+    font-size: 0.9rem;
+  }
+
+  .btn-remove {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
+}
+/* === THEME TÙY CHỈNH CHO REACT BIG CALENDAR === */
+
+/* Nền và viền tổng thể của lịch */
+.rbc-calendar {
+  background: #ffffff;
+  border-radius: 10px;
+  font-family: "Inter", system-ui, sans-serif;
+  color: #2d3748;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: 0.2s ease;
+}
+
+/* Header (thanh đổi tháng) */
+.rbc-toolbar {
+  background: linear-gradient(90deg, #3182ce, #63b3ed);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+.rbc-toolbar button {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.rbc-toolbar button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+.rbc-toolbar-label {
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+/* Header ngày trong tháng (T2, T3, ...) */
+.rbc-month-view .rbc-header {
+  background: #ebf8ff;
+  color: #2b6cb0;
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 1px solid #bee3f8;
+  padding: 6px;
+  font-size: 0.9rem;
+}
+
+/* Ô ngày */
+.rbc-day-bg {
+  transition: background 0.2s ease;
+}
+.rbc-month-row + .rbc-month-row {
+  border-top: 1px solid #e2e8f0;
+}
+.rbc-date-cell {
+  text-align: right;
+  padding-right: 6px;
+  font-size: 0.85rem;
+  color: #4a5568;
+}
+.rbc-date-cell.rbc-now {
+  color: #2b6cb0;
+  font-weight: 700;
+}
+
+/* Ngày có sự kiện (ca thi) */
+.rbc-day-bg.has-shift,
+.rbc-event {
+  background: #ebf8ff;
+  border-left: 3px solid #63b3ed;
+  color: #2d3748;
+  border-radius: 6px;
+  padding: 2px 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Hover nhẹ ngày có ca thi */
+.rbc-day-bg:hover {
+  background: #f0faff;
+}
+
+/* Sự kiện hiển thị trong ô */
+.rbc-event {
+  background-color: #90cdf4;
+  border: none;
+  color: #1a202c;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+.rbc-event:hover {
+  background-color: #63b3ed;
+  color: white;
+}
+
+/* Ngày hôm nay (viền nổi bật) */
+.rbc-today {
+  background-color: #e6fffa !important;
+  border: 2px solid #38b2ac;
+  border-radius: 6px;
+}
+
+/* Ngày ngoài tháng */
+.rbc-off-range-bg {
+  background: #f9fafb;
+  color: #a0aec0;
+}
+
+/* Tooltip và sự kiện */
+.rbc-show-more {
+  color: #3182ce;
+  font-weight: 500;
+  background: transparent;
+}
+
+/* Responsive mobile view */
+@media (max-width: 768px) {
+  .rbc-toolbar {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .rbc-toolbar-label {
+    font-size: 1rem;
+  }
+  .rbc-month-view .rbc-header {
+    font-size: 0.85rem;
+    padding: 4px;
+  }
+  .rbc-event {
+    font-size: 0.8rem;
+    padding: 2px 4px;
+  }
+}
+@media (max-width: 768px) {
+  .calendar-header {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+  }
+}
+@media (max-width: 768px) {
+  .calendar-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    text-align: left;
+  }
+
+  .calendar-header h2 {
+    flex: 1;
+    text-align: center;
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  .back-btn {
+    position: relative;
+    left: 0;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+}
