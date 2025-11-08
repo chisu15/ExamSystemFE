@@ -13,6 +13,7 @@ import FacultyDashboard from "./components/FacultyDashboard";
 // import ExamShiftRegister from "./components/FacultyDashboard/ExamShiftRegister";
 import AssignExamCalendar from "./components/FacultyDashboard/AssignExamCalendar";
 import RegisterFreeDays from "./components/FacultyDashboard/RegisterExamCalendar/index.js";
+import FacultyLayout from "./components/FacultyDashboard/FacultyDashboardLayout";
 
 function App() {
 	global.ip = "http://localhost:80";
@@ -49,18 +50,12 @@ function App() {
 					path="/scan-invigilator-2/:examCode/:id"
 					element={<ScanInvigilator invigilator="2" />}
 				/>
-				<Route
-					path="/faculty-dashboard"
-					element={<FacultyDashboard />}
-				/>
-				<Route
-					path="/faculty/assign"
-					element={<AssignExamCalendar />}
-				/>
-				<Route
-					path="/faculty/register"
-					element={<RegisterFreeDays />}
-				/>
+				<Route path="/faculty" element={<FacultyLayout />}>
+					<Route index element={<FacultyDashboard />} />{" "}
+					{/* /faculty → Tổng quan */}
+					<Route path="assign" element={<AssignExamCalendar />} />
+					<Route path="register" element={<RegisterFreeDays />} />
+				</Route>
 			</Routes>
 		</div>
 	);

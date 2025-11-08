@@ -1,298 +1,561 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import {
+	Card,
+	Row,
+	Col,
+	Table,
+	Statistic,
+	Input,
+	Button,
+	Progress,
+	message,
+	Typography,
+	Spin,
+	Select,
+} from "antd";
+import {
+	CalendarOutlined,
+	CheckCircleOutlined,
+	TeamOutlined,
+	FileDoneOutlined,
+	UserOutlined,
+	UsergroupAddOutlined,
+	EditOutlined,
+	SaveOutlined,
+	CloseOutlined,
+	PieChartOutlined,
+} from "@ant-design/icons";
 import global from "../../global";
-import { useNavigate } from "react-router-dom";
 import "./faculty-dashboard.css";
-import { Users, ClipboardList, UserCheck, Edit3, Save, X } from "lucide-react";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
+
+const { Paragraph } = Typography;
 
 export default function FacultyDashboard() {
-  const navigate = useNavigate();
+	const [data, setData] = useState(null);
+	const [users, setUsers] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [examRounds, setExamRounds] = useState([]);
+	const [selectedRound, setSelectedRound] = useState(null);
+	const [editingUser, setEditingUser] = useState(null);
+	const [newShiftValue, setNewShiftValue] = useState("");
+	const [summaryDate, setSummaryDate] = useState(dayjs());
+	const [dailySummary, setDailySummary] = useState([]);
+	const refAssigned = useRef(null);
+	const refFree = useRef(null);
+	const refUsers = useRef(null);
 
-  const [stats, setStats] = useState({
-    name: "",
-    number_teacher: 0,
-    invigilatorCount: 0,
-    avgPerShift: 0,
-  });
-  const [examRound, setExamRound] = useState(null); // 🟢 Đợt thi hiện tại
-  const [users, setUsers] = useState([]);
-  const [editingUser, setEditingUser] = useState(null);
-  const [newShiftValue, setNewShiftValue] = useState("");
-  const [loading, setLoading] = useState(true);
+	useEffect(() => {
+		fetchInitialData();
+	}, []);
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
+	const fetchInitialData = async () => {
+		try {
+			const userId = Cookies.get("user_id");
+			const userRes = await axios.post(
+				`${global.ip}/api/v1/users/detail/${userId}`
+			);
+			const user = userRes.data.user;
 
-  const fetchStats = async () => {
-    try {
-      const userId = Cookies.get("user_id");
-      if (!userId) return;
+			await Promise.all([
+				fetchCurrentWorkplace(user.workplace_id),
+				fetchAllExamRounds(user.workplace_id),
+				fetchUsers(user.workplace_id),
+			]);
+		} catch (err) {
+			message.error("Không thể tải dữ liệu!");
+		} finally {
+			setLoading(false);
+		}
+	};
 
-      // Lấy thông tin người dùng
-      const userRes = await axios.post(`${global.ip}/api/v1/users/detail/${userId}`);
-      const user = userRes.data?.user;
+	const fetchCurrentWorkplace = async (workplaceId) => {
+		const res = await axios.post(
+			`${global.ip}/api/v1/exam-round/current-workplace/${workplaceId}`
+		);
+		if (res.data.code === 200) setData(res.data.data);
+	};
 
-      // 🟩 Lấy thông tin đợt thi hiện tại của khoa
-      const roundRes = await axios.post(`${global.ip}/api/v1/exam-round/current-workplace/${user.workplace_id}`);
-      if (roundRes.data.code === 200) {
-        setExamRound(roundRes.data.data);
-      }
+	const fetchAllExamRounds = async (workplaceId) => {
+		const res = await axios.post(
+			`${global.ip}/api/v1/exam-round/all-workplace/${workplaceId}`
+		);
+		if (res.data.code === 200) setExamRounds(res.data.data || []);
+	};
 
-      // Lấy thông tin khoa
-      const facultyRes = await axios.post(`${global.ip}/api/v1/workplaces/detail/${user.workplace_id}`);
-      const workplace = facultyRes.data?.workplace || {};
+	const fetchUsers = async (workplaceId) => {
+		const res = await axios.post(`${global.ip}/api/v1/users/workplace/`, {
+			workplace_id: workplaceId,
+		});
+		setUsers(res.data?.users || []);
+	};
 
-      setStats({
-        name: workplace.name || "Khoa chưa xác định",
-        number_teacher: workplace.number_teacher ?? 0,
-        invigilatorCount: workplace.invigilator_count ?? 0,
-        avgPerShift: workplace.avg_per_shift ?? 0,
-      });
+	const fetchSummaryByDate = async (date) => {
+		try {
+			const userId = Cookies.get("user_id");
+			const userRes = await axios.post(
+				`${global.ip}/api/v1/users/detail/${userId}`
+			);
+			const user = userRes.data.user;
+			const res = await axios.get(
+				`${global.ip}/api/v1/workplace/summary-by-date/${user.workplace_id}?date=${date}`
+			);
+			if (res.data.code === 200) setDailySummary(res.data.data || []);
+		} catch (error) {
+			console.error(error);
+			message.error("Không thể tải tổng kết trong ngày!");
+		}
+	};
 
-      // 🟢 Lấy danh sách giảng viên trong khoa
-      const userListRes = await axios.post(`${global.ip}/api/v1/users/workplace/`, {
-        workplace_id: user.workplace_id,
-      });
-      setUsers(userListRes.data?.users || []);
-    } catch (err) {
-      console.error("Lỗi lấy dữ liệu:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+	const handleSelectRound = async (roundId) => {
+		setSelectedRound(roundId);
+		setLoading(true);
 
-  // 🟠 Cập nhật số ca thi cho giảng viên
-  const handleUpdateShift = async (userId) => {
-    if (!newShiftValue || isNaN(newShiftValue)) {
-      alert("⚠️ Vui lòng nhập số hợp lệ!");
-      return;
-    }
-    try {
-      await axios.patch(`${global.ip}/api/v1/users/update-number-shift`, {
-        user_id: userId,
-        new_number_shift: Number(newShiftValue),
-      });
-      alert("✅ Cập nhật thành công!");
-      setEditingUser(null);
-      setNewShiftValue("");
-      fetchStats(); // reload
-    } catch (err) {
-      console.error("Lỗi cập nhật ca thi:", err);
-      alert("❌ Lỗi khi cập nhật số ca thi!");
-    }
-  };
+		try {
+			if (roundId === "current") {
+				const userId = Cookies.get("user_id");
+				const userRes = await axios.post(
+					`${global.ip}/api/v1/users/detail/${userId}`
+				);
+				const user = userRes.data.user;
+				await fetchCurrentWorkplace(user.workplace_id);
+			} else {
+				const res = await axios.post(
+					`${global.ip}/api/v1/exam-round/workplace-round`,
+					{
+						exam_round_id: roundId,
+					}
+				);
+				if (res.data.code === 200) setData(res.data.data);
+			}
+		} catch {
+			message.error("Không thể tải dữ liệu đợt thi!");
+		} finally {
+			setLoading(false);
+		}
+	};
 
-  if (loading) {
-    return (
-      <div className="faculty-dashboard">
-        <div className="dashboard-container text-center text-gray-500">
-          <p>Đang tải dữ liệu...</p>
-        </div>
-      </div>
-    );
-  }
+	const handleUpdateShift = async (userId) => {
+		if (!newShiftValue || isNaN(newShiftValue)) {
+			message.warning("Vui lòng nhập số hợp lệ!");
+			return;
+		}
+		try {
+			await axios.patch(`${global.ip}/api/v1/users/update-number-shift`, {
+				user_id: userId,
+				new_number_shift: Number(newShiftValue),
+			});
+			message.success("Cập nhật thành công!");
+			setEditingUser(null);
+			setNewShiftValue("");
+			const userIdCookie = Cookies.get("user_id");
+			const userRes = await axios.post(
+				`${global.ip}/api/v1/users/detail/${userIdCookie}`
+			);
+			const user = userRes.data.user;
+			await fetchCurrentWorkplace(user.workplace_id);
+		} catch {
+			message.error("Lỗi khi cập nhật số ca thi!");
+		}
+	};
 
-  return (
-    <div className="faculty-dashboard">
-      <div className="dashboard-container">
-        <h1 className="dashboard-title">
-          Tổng quan <span>{stats.name}</span>
-        </h1>
+	const scrollToSection = (ref) => {
+		if (ref && ref.current) {
+			ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
+			ref.current.classList.add("highlight-section");
+			setTimeout(
+				() => ref.current.classList.remove("highlight-section"),
+				2000
+			);
+		}
+	};
 
-        {/* --- 🟦 Thông tin đợt thi hiện tại --- */}
-{examRound && (() => {
-  const total = examRound.total_shift || 0;
-  const completed = examRound.completed_shifts || 0;
-  const percent = total > 0 ? Math.min(100, Math.round((completed / total) * 100)) : 0;
+	if (loading) return <Spin tip="Đang tải dữ liệu..." fullscreen />;
+	if (!data) return <p>Không có dữ liệu.</p>;
 
-  return (
-    <div className="exam-round-card relative bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5 mb-8 shadow-md overflow-hidden">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
-        <div>
-          <h2 className="text-xl font-semibold text-blue-700">
-            {examRound.exam_round?.name}
-          </h2>
-          <p className="text-sm text-gray-600 mt-1">
-            {examRound.exam_round?.description}
-          </p>
-        </div>
-        <div className="text-sm text-gray-500 mt-2 sm:mt-0">
-          {new Date(examRound.exam_round?.start_date).toLocaleDateString("vi-VN")} —{" "}
-          {new Date(examRound.exam_round?.end_date).toLocaleDateString("vi-VN")}
-        </div>
-      </div>
+	const {
+		exam_round,
+		workplace,
+		total_shift,
+		number_teacher,
+		completed_shifts,
+		total_free_users,
+		total_all_shifts,
+		registered_free_days = [],
+		assigned_shift_details = [],
+	} = data;
 
-      {/* Thống kê dạng grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        <div className="bg-white shadow-sm rounded-lg p-3 border border-gray-100">
-          <p className="text-gray-500 text-sm">Tổng số ca thi</p>
-          <h3 className="text-lg font-bold text-blue-700">{total}</h3>
-        </div>
-        <div className="bg-white shadow-sm rounded-lg p-3 border border-gray-100">
-          <p className="text-gray-500 text-sm">Số giảng viên</p>
-          <h3 className="text-lg font-bold text-green-600">{examRound.number_teacher || 0}</h3>
-        </div>
-        <div className="bg-white shadow-sm rounded-lg p-3 border border-gray-100">
-          <p className="text-gray-500 text-sm">Đã hoàn thành</p>
-          <h3 className="text-lg font-bold text-yellow-600">{completed}</h3>
-        </div>
-        <div className="bg-white shadow-sm rounded-lg p-3 border border-gray-100">
-          <p className="text-gray-500 text-sm">Tổng tất cả ca</p>
-          <h3 className="text-lg font-bold text-indigo-600">{examRound.total_all_shifts || 0}</h3>
-        </div>
-      </div>
+	const percent = total_shift
+		? Math.round((completed_shifts / total_shift) * 100)
+		: 0;
 
-      {/* Progress */}
-      <div className="w-full bg-gray-200 rounded-full h-3 mt-2 overflow-hidden">
-        <div
-          className={`h-3 transition-all duration-500 ${
-            percent < 50
-              ? "bg-yellow-400"
-              : percent < 100
-              ? "bg-blue-500"
-              : "bg-green-500"
-          }`}
-          style={{ width: `${percent}%` }}
-        ></div>
-      </div>
-      <p className="text-center text-sm text-gray-700 mt-2">
-        Hoàn thành <b>{completed}</b> / <b>{total}</b> ca thi —{" "}
-        <span className="font-semibold text-blue-600">{percent}%</span>
-      </p>
-    </div>
-  );
-})()}
+	return (
+		<div className="faculty-dashboard-container">
+			<h1 className="dashboard-title">Tổng quan: {workplace?.name}</h1>
 
+			{/* ======== THỐNG KÊ ======== */}
+			<Row gutter={[16, 16]} className="stats-row">
+				<Col xs={24} sm={12} md={4}>
+					<Card
+						hoverable
+						onClick={() => scrollToSection(refAssigned)}
+					>
+						<Statistic
+							title="Tổng ca thi"
+							value={total_shift}
+							prefix={<CalendarOutlined />}
+						/>
+						<Paragraph className="see-more">🔗 Chi tiết</Paragraph>
+					</Card>
+				</Col>
+				<Col xs={24} sm={12} md={4}>
+					<Card
+						hoverable
+						onClick={() => scrollToSection(refAssigned)}
+					>
+						<Statistic
+							title="Đã hoàn thành"
+							value={completed_shifts}
+							prefix={<CheckCircleOutlined />}
+						/>
+						<Paragraph className="see-more">
+							🔗 Ca đã xong
+						</Paragraph>
+					</Card>
+				</Col>
+				<Col xs={24} sm={12} md={4}>
+					<Card hoverable onClick={() => scrollToSection(refFree)}>
+						<Statistic
+							title="GV đăng ký coi thi"
+							value={total_free_users}
+							prefix={<UsergroupAddOutlined />}
+						/>
+						<Paragraph className="see-more">
+							🔗 Lịch coi thi
+						</Paragraph>
+					</Card>
+				</Col>
+				<Col xs={24} sm={12} md={4}>
+					<Card hoverable onClick={() => scrollToSection(refUsers)}>
+						<Statistic
+							title="Tổng số GV"
+							value={number_teacher}
+							prefix={<UserOutlined />}
+						/>
+						<Paragraph className="see-more">🔗 Danh sách</Paragraph>
+					</Card>
+				</Col>
+				<Col xs={24} sm={12} md={4}>
+					<Card>
+						<Statistic
+							title="Tổng số ca đã coi (Tất cả các kỳ)"
+							value={total_all_shifts}
+							prefix={<PieChartOutlined />}
+						/>
+					</Card>
+				</Col>
+			</Row>
 
-        {/* --- Thống kê --- */}
-        <div className="dashboard-stats">
-          <div className="stat-card">
-            <div className="icon-wrapper blue"><Users size={28} /></div>
-            <div>
-              <p>Số lượng giảng viên</p>
-              <h2>{stats.number_teacher}</h2>
-            </div>
-          </div>
+			{/* ======== ĐỢT THI HIỆN TẠI ======== */}
+			<Card className="exam-round-card">
+				<div className="exam-round-header">
+					<h3>Đợt thi</h3>
+					<Select
+						value={selectedRound || "current"}
+						style={{ width: 320 }}
+						onChange={handleSelectRound}
+					>
+						<Select.Option value="current">
+							Đợt thi hiện tại
+						</Select.Option>
+						{examRounds.map((r) => (
+							<Select.Option key={r.id} value={r.id}>
+								{r.name}
+							</Select.Option>
+						))}
+					</Select>
+				</div>
 
-          <div className="stat-card">
-            <div className="icon-wrapper orange"><ClipboardList size={28} /></div>
-            <div>
-              <p>Số người phải trông thi</p>
-              <h2>{stats.invigilatorCount}</h2>
-            </div>
-          </div>
+				<p>
+					<b>{exam_round?.name}</b> — {exam_round?.description}
+				</p>
+				<p>
+					{new Date(exam_round?.start_date).toLocaleDateString(
+						"vi-VN"
+					)}{" "}
+					→{" "}
+					{new Date(exam_round?.end_date).toLocaleDateString("vi-VN")}
+				</p>
+				<Progress
+					percent={percent}
+					status={percent === 100 ? "success" : "active"}
+					strokeColor={
+						percent < 50
+							? "#faad14"
+							: percent < 100
+							? "#1890ff"
+							: "#52c41a"
+					}
+				/>
+				<p className="exam-progress-text">
+					Hoàn thành <b>{completed_shifts}</b> / <b>{total_shift}</b>{" "}
+					— Tổng toàn kỳ: <b>{total_all_shifts}</b>
+				</p>
+			</Card>
+			<Card
+				className="daily-summary-card"
+				title="Tổng kết ca thi theo ngày"
+			>
+				<div
+					style={{
+						display: "flex",
+						justifyContent: "space-between",
+						marginBottom: 12,
+					}}
+				>
+					<DatePicker
+						value={summaryDate}
+						onChange={(val) => {
+							setSummaryDate(val);
+							fetchSummaryByDate(val.format("YYYY-MM-DD"));
+						}}
+						format="DD/MM/YYYY"
+						allowClear={false}
+					/>
+					<span style={{ fontStyle: "italic", color: "#475569" }}>
+						Dữ liệu theo ngày thi
+					</span>
+				</div>
 
-          <div className="stat-card">
-            <div className="icon-wrapper green"><UserCheck size={28} /></div>
-            <div>
-              <p>Số người/buổi trung bình</p>
-              <h2>{stats.avgPerShift}</h2>
-            </div>
-          </div>
-        </div>
+				<Table
+					bordered
+					size="middle"
+					dataSource={dailySummary}
+					rowKey={(r) => `${r.user_id}-${r.date}`}
+					pagination={{ pageSize: 5 }}
+					columns={[
+						{
+							title: "Giảng viên",
+							dataIndex: "teacher_name",
+							align: "center",
+						},
+						{
+							title: "Mã GV",
+							dataIndex: "teacher_code",
+							align: "center",
+						},
+						{
+							title: "Số ca trong ngày",
+							dataIndex: "total_shifts",
+							align: "center",
+						},
+						{
+							title: "Số ca đã coi",
+							dataIndex: "completed_shifts",
+							align: "center",
+						},
+						{
+							title: "Ghi chú",
+							dataIndex: "note",
+							align: "center",
+						},
+					]}
+				/>
+			</Card>
 
-        {/* --- Nút hành động --- */}
-        <div className="dashboard-actions">
-          <button className="btn blue" onClick={() => navigate("/faculty/assign")}>
-            Gán giảng viên cho ca thi
-          </button>
-          <button className="btn green" onClick={() => navigate("/faculty/register")}>
-            Đăng ký ca thi
-          </button>
-        </div>
+			{/* ======== CA THI ======== */}
+			<div ref={refAssigned} className="scroll-section">
+				<Card title="Ca thi đã gán" className="detail-card">
+					<Table
+						bordered
+						size="middle"
+						dataSource={assigned_shift_details}
+						rowKey={(r) => `${r.exam_shift_id}-${r.user_id}`}
+						pagination={{ pageSize: 5 }}
+						columns={[
+							{
+								title: "Giảng viên",
+								dataIndex: "teacher_name",
+								align: "center",
+							},
+							{
+								title: "Mã GV",
+								dataIndex: "teacher_code",
+								align: "center",
+							},
+							{
+								title: "Môn thi",
+								dataIndex: "subject_name",
+								align: "center",
+							},
+							{
+								title: "Phòng",
+								render: (_, r) =>
+									`${r.building}-${r.classroom}`,
+								align: "center",
+							},
+							{
+								title: "Thời gian",
+								dataIndex: "starting_time",
+								render: (d) =>
+									new Date(d).toLocaleString("vi-VN", {
+										hour: "2-digit",
+										minute: "2-digit",
+										day: "2-digit",
+										month: "2-digit",
+									}),
+								align: "center",
+							},
+						]}
+					/>
+				</Card>
+			</div>
 
-        {/* --- Danh sách giảng viên --- */}
-        <div className="faculty-list">
-          <h2 className="faculty-list-title">Danh sách giảng viên trong khoa</h2>
+			{/* ======== LỊCH RẢNH ======== */}
+			<div ref={refFree} className="scroll-section">
+				<Card
+					title="Lịch coi thi của giảng viên"
+					className="detail-card"
+				>
+					<Table
+						bordered
+						size="middle"
+						dataSource={registered_free_days}
+						rowKey="freeday_id"
+						pagination={{ pageSize: 5 }}
+						columns={[
+							{
+								title: "Giảng viên",
+								dataIndex: "teacher_name",
+								align: "center",
+							},
+							{
+								title: "Mã GV",
+								dataIndex: "teacher_code",
+								align: "center",
+							},
+							{
+								title: "Ngày coi thi",
+								dataIndex: "free_date",
+								render: (d) =>
+									new Date(d).toLocaleDateString("vi-VN"),
+								align: "center",
+							},
+							{
+								title: "Ghi chú",
+								dataIndex: "note",
+								align: "center",
+							},
+						]}
+					/>
+				</Card>
+			</div>
 
-          <div className="table-container">
-            <table className="faculty-table">
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Họ và tên</th>
-                  <th>Mã giảng viên</th>
-                  <th>Email</th>
-                  <th>Số ca thi đã coi</th>
-                  <th>Số ca được giao</th>
-                  <th>Vai trò</th>
-                  <th>Hành động</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.length > 0 ? (
-                  users.map((u, i) => (
-                    <tr key={u.id}>
-                      <td>{i + 1}</td>
-                      <td>{u.name}</td>
-                      <td>{u.teacher_code}</td>
-                      <td>{u.email || "-"}</td>
-                      <td>{u.exam_shift_count ?? 0}</td>
-
-                      {/* Cột chỉnh sửa số ca */}
-                      <td>
-                        {editingUser === u.id ? (
-                          <input
-                            type="number"
-                            value={newShiftValue}
-                            onChange={(e) => setNewShiftValue(e.target.value)}
-                            className="border rounded px-2 py-1 w-16 text-center"
-                          />
-                        ) : (
-                          u.number_shift ?? "-"
-                        )}
-                      </td>
-
-                      <td>{u.role_name}</td>
-
-                      <td>
-                        {editingUser === u.id ? (
-                          <>
-                            <button
-                              className="btn confirm px-2 py-1 mr-2"
-                              onClick={() => handleUpdateShift(u.id)}
-                            >
-                              <Save size={16} />
-                            </button>
-                            <button
-                              className="btn cancel px-2 py-1"
-                              onClick={() => {
-                                setEditingUser(null);
-                                setNewShiftValue("");
-                              }}
-                            >
-                              <X size={16} />
-                            </button>
-                          </>
-                        ) : (
-                          <button
-                            className="btn reset px-2 py-1"
-                            onClick={() => {
-                              setEditingUser(u.id);
-                              setNewShiftValue(u.number_shift ?? "");
-                            }}
-                          >
-                            <Edit3 size={16} />
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="8" style={{ textAlign: "center", color: "#6b7280" }}>
-                      Không có dữ liệu
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+			{/* ======== DANH SÁCH GV ======== */}
+			<div ref={refUsers} className="scroll-section">
+				<Card
+					title="Danh sách giảng viên trong khoa"
+					className="detail-card"
+				>
+					<Table
+						bordered
+						size="middle"
+						dataSource={users}
+						rowKey="id"
+						pagination={{ pageSize: 10 }}
+						columns={[
+							{
+								title: "STT",
+								render: (_, __, i) => i + 1,
+								align: "center",
+							},
+							{
+								title: "Họ và tên",
+								dataIndex: "name",
+								align: "center",
+							},
+							{
+								title: "Mã GV",
+								dataIndex: "teacher_code",
+								align: "center",
+							},
+							{
+								title: "Email",
+								dataIndex: "email",
+								align: "center",
+							},
+							{
+								title: "Số ca đã coi",
+								dataIndex: "exam_shift_count",
+								align: "center",
+							},
+							{
+								title: "Số ca được giao",
+								align: "center",
+								render: (_, record) =>
+									editingUser === record.id ? (
+										<Input
+											type="number"
+											value={newShiftValue}
+											onChange={(e) =>
+												setNewShiftValue(e.target.value)
+											}
+											style={{ width: 80 }}
+										/>
+									) : (
+										record.number_shift
+									),
+							},
+							{
+								title: "Vai trò",
+								dataIndex: "role_name",
+								align: "center",
+							},
+							{
+								title: "Hành động",
+								align: "center",
+								render: (_, record) =>
+									editingUser === record.id ? (
+										<>
+											<Button
+												type="primary"
+												icon={<SaveOutlined />}
+												size="small"
+												style={{ marginRight: 8 }}
+												onClick={() =>
+													handleUpdateShift(record.id)
+												}
+											/>
+											<Button
+												icon={<CloseOutlined />}
+												size="small"
+												danger
+												onClick={() => {
+													setEditingUser(null);
+													setNewShiftValue("");
+												}}
+											/>
+										</>
+									) : (
+										<Button
+											icon={<EditOutlined />}
+											size="small"
+											onClick={() => {
+												setEditingUser(record.id);
+												setNewShiftValue(
+													record.number_shift ?? ""
+												);
+											}}
+										/>
+									),
+							},
+						]}
+					/>
+				</Card>
+			</div>
+		</div>
+	);
 }

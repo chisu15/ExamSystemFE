@@ -49,7 +49,7 @@ const Login = (props) => {
 				axios.defaults.headers.common["session_id"] = sessionId;
 				if (data.user.role_id === 5) {
 					toast.success("Đăng nhập thành công - Quản lý khoa");
-					navigate("/faculty-dashboard");
+					navigate("/faculty");
 					return;
 				} else {
 					toast.success(

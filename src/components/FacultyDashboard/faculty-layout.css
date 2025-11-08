@@ -1,0 +1,198 @@
+.faculty-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+.faculty-sidebar {
+  width: 220px;
+  background: white;
+  border-right: 1px solid #e5e7eb;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-title {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #1e40af;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  color: #374151;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.nav-item:hover {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+
+.nav-item.active {
+  background-color: #1d4ed8;
+  color: white;
+}
+
+.faculty-content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+/* =================== SIDEBAR =================== */
+.faculty-sidebar {
+  transition: all 0.3s ease;
+}
+
+.sidebar-logo {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.4);
+  font-weight: 700;
+  color: #1e3a8a;
+  letter-spacing: 1px;
+}
+
+.sidebar-title {
+  font-size: 1.1rem;
+}
+
+.mobile-menu-btn {
+  display: none;
+}
+
+/* =================== RESPONSIVE =================== */
+
+/* 📱 Mobile */
+@media (max-width: 768px) {
+  /* Ẩn sidebar cố định */
+  .faculty-sidebar {
+    display: none !important;
+  }
+
+  /* Header nhỏ hơn, hiện nút menu */
+  .faculty-header {
+    padding: 0 12px !important;
+  }
+
+  .mobile-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background-color: #f3f4f6;
+    color: #1e293b;
+  }
+
+  .faculty-main-layout {
+    margin-left: 0 !important;
+  }
+
+  .faculty-dashboard-container {
+    padding: 12px;
+  }
+}
+
+/* 💻 Tablet (768–1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .faculty-main-layout {
+    margin-left: 80px !important;
+  }
+  .sidebar-title {
+    display: none;
+  }
+}
+/* ==== Header ==== */
+.faculty-header {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 0 20px;
+  font-weight: 600;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+/* ==== Sidebar ==== */
+.sidebar-logo {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.3);
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+.sidebar-title {
+  font-size: 1.05rem;
+  letter-spacing: 0.5px;
+}
+
+/* ==== Mobile menu button ==== */
+.mobile-menu-btn {
+  display: none;
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #1e3a8a;
+  font-size: 1.4rem;
+}
+
+/* ==== Mobile responsive ==== */
+@media (max-width: 768px) {
+  /* Ẩn sidebar cố định */
+  .faculty-sidebar {
+    display: none !important;
+  }
+
+  /* Header */
+  .faculty-header {
+    justify-content: center;
+    text-align: center;
+    font-size: 1rem;
+  }
+
+  .mobile-menu-btn {
+    display: inline-flex;
+  }
+
+  /* Main layout full width */
+  .faculty-main {
+    margin-left: 0 !important;
+  }
+
+  /* Drawer style */
+  .ant-drawer-title {
+    font-weight: 600;
+    color: #1e3a8a;
+  }
+}
+
+/* ==== Tablet ==== */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .faculty-main {
+    margin-left: 80px !important;
+  }
+
+  .sidebar-title {
+    display: none;
+  }
+}

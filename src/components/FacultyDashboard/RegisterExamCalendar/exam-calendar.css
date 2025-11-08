@@ -742,3 +742,274 @@
     font-size: 0.8rem;
   }
 }
+/* ===== EXAM CALENDAR PAGES ===== */
+.exam-calendar-wrapper {
+  background-color: #f9fafb;
+  padding: 24px;
+  min-height: 100vh;
+  font-family: "Inter", sans-serif;
+}
+
+/* --- Header --- */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.calendar-header h2 {
+  color: #1e3a8a;
+  font-weight: 600;
+  font-size: 1.4rem;
+}
+
+.back-btn {
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  color: #1f2937;
+  font-weight: 500;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.back-btn:hover {
+  background-color: #e0e7ff;
+  color: #1e3a8a;
+}
+
+/* --- Calendar container --- */
+.calendar-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.rbc-calendar {
+  font-size: 0.9rem;
+}
+
+.rbc-header {
+  background-color: #f1f5f9;
+  color: #1e293b;
+  font-weight: 600;
+  padding: 6px;
+}
+
+/* Highlight cells */
+.rbc-day-bg {
+  transition: background-color 0.2s ease;
+}
+
+.rbc-day-bg:hover {
+  background-color: #eff6ff !important;
+}
+
+/* --- Legend --- */
+.calendar-legend {
+  margin-top: 16px;
+  display: flex;
+  gap: 20px;
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+.legend-box {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid #cbd5e1;
+  margin-right: 6px;
+}
+
+/* --- Modal overlay --- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: #ffffff;
+  padding: 24px;
+  width: 450px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content h3 {
+  color: #1e3a8a;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* --- Shift list / Slot list --- */
+.shift-list {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px;
+  background: #f9fafb;
+}
+
+.shift-item {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.shift-item:hover {
+  background-color: #eff6ff;
+}
+
+.shift-item.selected {
+  border-color: #2563eb;
+  background-color: #e0f2fe;
+}
+
+/* --- Lecturer select --- */
+.lecturer-select label {
+  display: block;
+  font-weight: 500;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.lecturer-select select {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+/* --- Modal buttons --- */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.btn {
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn.confirm {
+  background-color: #2563eb;
+  color: white;
+}
+.btn.confirm:hover {
+  background-color: #1e40af;
+}
+
+.btn.cancel {
+  background-color: #f3f4f6;
+  color: #1f2937;
+}
+.btn.cancel:hover {
+  background-color: #e5e7eb;
+}
+
+/* --- Assign table preview --- */
+.assign-preview {
+  background: white;
+  margin-top: 24px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  padding: 16px;
+}
+
+.assign-preview h3 {
+  color: #1e40af;
+  margin-bottom: 12px;
+}
+
+.assign-preview table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.assign-preview th {
+  background-color: #f1f5f9;
+  padding: 8px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.assign-preview td {
+  padding: 8px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.btn-remove {
+  background-color: #f87171;
+  border: none;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+.btn-remove:hover {
+  background-color: #dc2626;
+}
+
+/* --- Actions --- */
+.assign-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.btn.reset {
+  background-color: #f3f4f6;
+  color: #1f2937;
+}
+.btn.reset:hover {
+  background-color: #e5e7eb;
+}
+
+/* --- Register modal input --- */
+.assign-input {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  margin-top: 10px;
+  padding: 6px;
+  resize: none;
+  font-family: inherit;
+}
+
+/* --- Animations --- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+  font-style: italic;
+}
